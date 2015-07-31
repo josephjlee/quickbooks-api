@@ -17,12 +17,12 @@
   },
   "autoload": {
     "psr-4": {
-      "Wheniwork\\Quickbooks": "src/"
+      "Wheniwork\\Quickbooks\\": "src/"
     }
   },
   "autoload-dev": {
     "psr-4": {
-      "Wheniwork\\Quickbooks\\Test": "tests/src"
+      "Wheniwork\\Quickbooks\\Test\\": "tests/src"
     }
   }
 }
