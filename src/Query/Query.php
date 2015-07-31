@@ -109,7 +109,7 @@ class Query
      * @param string $order
      * @return $this
      */
-    public function order($property, $order)
+    public function order($property, $order = null)
     {
         $this->order[] = [$property, $order];
         return $this;
@@ -123,7 +123,7 @@ class Query
      */
     public function offset($number)
     {
-        if (!$number >= 0) {
+        if ($number < 0) {
             throw new RuntimeException("Offset must be zero or above.");
         }
 
@@ -139,7 +139,7 @@ class Query
      */
     public function take($number)
     {
-        if (!$number <= 500) {
+        if ($number > 500) {
             throw new RuntimeException("Take must be 500 or below.");
         }
 
@@ -171,6 +171,26 @@ class Query
 
             // OR isn't implemented by QuickBooks
             $query[] = sprintf("WHERE %s", implode(' AND ', $where));
+        }
+
+        // Order
+        if ($this->order) {
+            $order = [];
+            foreach ($this->order as $value) {
+                $order[] = implode(' ', array_filter($value));
+            }
+
+            $query[] = sprintf("ORDERBY %s", implode(', ', $order));
+        }
+
+        // Offset
+        if ($this->offset) {
+            $query[] = sprintf("STARTPOSITION %s", $this->offset);
+        }
+
+        // Take
+        if ($this->take) {
+            $query[] = sprintf("MAXRESULTS %s", $this->take);
         }
 
         return implode(' ', $query);

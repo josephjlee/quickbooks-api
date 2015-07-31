@@ -17,7 +17,14 @@ class QueryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("SELECT * FROM test", $query);
     }
 
-    public function testSingleWhereQuery()
+    public function testMissingSelect()
+    {
+        $query = Query::from('test')->build();
+
+        $this->assertEquals("SELECT * FROM test", $query);
+    }
+
+    public function testSingleWhere()
     {
         $query = Query::from('test')
             ->select('*')
@@ -27,7 +34,7 @@ class QueryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("SELECT * FROM test WHERE total = '1000.00'", $query);
     }
 
-    public function testMultipleWhereQuery()
+    public function testMultipleWhere()
     {
         $query = Query::from('test')
             ->select('*')
@@ -36,6 +43,52 @@ class QueryTest extends PHPUnit_Framework_TestCase
             ->build();
 
         $this->assertEquals("SELECT * FROM test WHERE cost = '1000.00' AND total > '5'", $query);
+    }
+
+    public function testSingleOrder()
+    {
+        $query = Query::from('test')
+            ->select('*')
+            ->order('total')
+            ->build();
+
+        $this->assertEquals("SELECT * FROM test ORDERBY total", $query);
+
+        $query = Query::from('test')
+            ->select('*')
+            ->order('total', 'DESC')
+            ->build();
+
+        $this->assertEquals("SELECT * FROM test ORDERBY total DESC", $query);
+    }
+
+    public function testMultipleOrder()
+    {
+        $query = Query::from('test')
+            ->select('*')
+            ->order('cost')
+            ->order('total', 'DESC')
+            ->build();
+
+        $this->assertEquals("SELECT * FROM test ORDERBY cost, total DESC", $query);
+    }
+
+    public function testOffset()
+    {
+        $query = Query::from('test')
+            ->offset(5)
+            ->build();
+
+        $this->assertEquals("SELECT * FROM test STARTPOSITION 5", $query);
+    }
+
+    public function testTake()
+    {
+        $query = Query::from('test')
+            ->take(7)
+            ->build();
+
+        $this->assertEquals("SELECT * FROM test MAXRESULTS 7", $query);
     }
 
     /**
