@@ -32,7 +32,7 @@ class Query
     /**
      * @var string
      */
-    private $select;
+    private $select = '*';
 
     /**
      * @var array
@@ -98,7 +98,7 @@ class Query
      */
     public function where($property, $comparison, $value)
     {
-        $this->where[] = [$property, $comparison, $value];
+        $this->where[] = [$property, $comparison, (is_bool($value)) ? $value: sprintf("'%s'", $value)];
         return $this;
     }
 
@@ -147,8 +147,32 @@ class Query
         return $this;
     }
 
+    /**
+     * Build the query
+     *
+     * @return string
+     */
     public function build()
     {
-        return $this;
+        $query = [];
+
+        // Select
+        $query[] = sprintf("SELECT %s", $this->select);
+
+        // From
+        $query[] = sprintf("FROM %s", $this->entity);
+
+        // Where
+        if ($this->where) {
+            $where = [];
+            foreach ($this->where as $value) {
+                $where[] = implode(' ', $value);
+            }
+
+            // OR isn't implemented by QuickBooks
+            $query[] = sprintf("WHERE %s", implode(' AND ', $where));
+        }
+
+        return implode(' ', $query);
     }
 }
