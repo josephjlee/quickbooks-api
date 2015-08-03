@@ -17,6 +17,22 @@ class QueryTest extends PHPUnit_Framework_TestCase
         $this->assertEquals("SELECT * FROM test", $query);
     }
 
+    public function testComplexQuery()
+    {
+        $query = Query::from('test')
+            ->select('*')
+            ->where('test', '=', true)
+            ->where('cost', '>', 5)
+            ->where('total', '=', '50.00')
+            ->order('cost', 'desc')
+            ->order('total', 'asc')
+            ->offset(5)
+            ->take(100)
+            ->build();
+
+        $this->assertEquals("SELECT * FROM test WHERE test = true AND cost > 5 AND total = '50.00' ORDERBY cost desc, total asc STARTPOSITION 5 MAXRESULTS 100", $query);
+    }
+
     public function testMissingSelect()
     {
         $query = Query::from('test')->build();
@@ -42,7 +58,7 @@ class QueryTest extends PHPUnit_Framework_TestCase
             ->where('total', '>', 5)
             ->build();
 
-        $this->assertEquals("SELECT * FROM test WHERE cost = '1000.00' AND total > '5'", $query);
+        $this->assertEquals("SELECT * FROM test WHERE cost = '1000.00' AND total > 5", $query);
     }
 
     public function testSingleOrder()

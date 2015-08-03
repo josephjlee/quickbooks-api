@@ -1,5 +1,5 @@
 <?php
-namespace Wheniwork\Quickbooks\Query;
+namespace Wheniwork\Quickbooks;
 
 /**
  * Class Entities

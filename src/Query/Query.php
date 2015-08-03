@@ -98,7 +98,7 @@ class Query
      */
     public function where($property, $comparison, $value)
     {
-        $this->where[] = [$property, $comparison, (is_bool($value)) ? $value: sprintf("'%s'", $value)];
+        $this->where[] = [$property, $comparison, var_export($value, true)];
         return $this;
     }
 
@@ -157,10 +157,10 @@ class Query
         $query = [];
 
         // Select
-        $query[] = sprintf("SELECT %s", $this->select);
+        $query['select'] = sprintf("SELECT %s", $this->select);
 
         // From
-        $query[] = sprintf("FROM %s", $this->entity);
+        $query['from'] = sprintf("FROM %s", $this->entity);
 
         // Where
         if ($this->where) {
@@ -170,7 +170,7 @@ class Query
             }
 
             // OR isn't implemented by QuickBooks
-            $query[] = sprintf("WHERE %s", implode(' AND ', $where));
+            $query['where'] = sprintf("WHERE %s", implode(' AND ', $where));
         }
 
         // Order
@@ -180,17 +180,17 @@ class Query
                 $order[] = implode(' ', array_filter($value));
             }
 
-            $query[] = sprintf("ORDERBY %s", implode(', ', $order));
+            $query['order'] = sprintf("ORDERBY %s", implode(', ', $order));
         }
 
         // Offset
         if ($this->offset) {
-            $query[] = sprintf("STARTPOSITION %s", $this->offset);
+            $query['offset'] = sprintf("STARTPOSITION %s", $this->offset);
         }
 
         // Take
         if ($this->take) {
-            $query[] = sprintf("MAXRESULTS %s", $this->take);
+            $query['take'] = sprintf("MAXRESULTS %s", $this->take);
         }
 
         return implode(' ', $query);
